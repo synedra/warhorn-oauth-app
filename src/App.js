@@ -10,7 +10,7 @@ const GitHubOAuthApp = () => {
 
   // GitHub OAuth configuration
   const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
-  const REDIRECT_URI = window.location.origin;
+  const REDIRECT_URI = "https://paizo.netlify.app"
 
   // handleOAuthCallback moved inside useEffect below
 
@@ -26,7 +26,6 @@ const GitHubOAuthApp = () => {
         // In a real app, you'd exchange the code for an access token via your backend
         // For demo purposes, we'll simulate this process
         console.log('OAuth code received:', code);
-        // Replace the placeholder in handleOAuthCallback with:
         const tokenResponse = await fetch('/.netlify/functions/exchange_token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -36,10 +35,11 @@ const GitHubOAuthApp = () => {
         if (tokenData.access_token) {
           fetchUserData(tokenData.access_token);
         } else {
-          setError('Failed to get access token');
+          // Show detailed error from backend if available
+          setError(tokenData.error || tokenData.details || 'Failed to get access token');
         }
       } catch (err) {
-        setError('Failed to authenticate with Warhorn');
+        setError('Failed to authenticate with Warhorn: ' + err.message);
       } finally {
         setLoading(false);
         // Clean up URL

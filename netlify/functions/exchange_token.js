@@ -1,5 +1,5 @@
 // netlify/functions/exchange_token.js
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST') {
@@ -20,7 +20,7 @@ exports.handler = async function(event, context) {
 
     const CLIENT_ID = process.env.WARHORN_CLIENT_ID;
     const CLIENT_SECRET = process.env.WARHORN_CLIENT_SECRET;
-    const REDIRECT_URI = 'https://paizo.netlify.com'; // Must match your app settings
+    const REDIRECT_URI = 'https://paizo.netlify.app'; // Must match your app settings
 
     const response = await fetch('https://warhorn.net/oauth/token', {
       method: 'POST',
