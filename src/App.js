@@ -1,6 +1,6 @@
 // src/App.js
 import React, { useState, useEffect } from 'react';
-import { User, LogOut, Github, Star, GitFork, Calendar } from 'lucide-react';
+import { LogOut, Github, Star, GitFork, Calendar } from 'lucide-react';
 
 const GitHubOAuthApp = () => {
   const [user, setUser] = useState(null);
@@ -9,7 +9,7 @@ const GitHubOAuthApp = () => {
   const [error, setError] = useState(null);
 
   // GitHub OAuth configuration
-  const CLIENT_ID = 'your_github_client_id'; // Replace with your GitHub App client ID
+  const CLIENT_ID = process.env.CLIENT_ID; // Replace with your GitHub App client ID
   const REDIRECT_URI = window.location.origin;
 
   useEffect(() => {
@@ -23,8 +23,8 @@ const GitHubOAuthApp = () => {
   }, []);
 
   const handleLogin = () => {
-    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=user:read repo:read`;
-    window.location.href = githubAuthUrl;
+    const warhornAuthUrl = `https://warhorn.net/oauth/authorize?response_type=code&redirect_uri=${REDIRECT_URI}&scope=openid%20email%20profile&state=stateystate&client_id=${CLIENT_ID}`;
+    window.location.href = warhornAuthUrl;
   };
 
   const handleOAuthCallback = async (code) => {
@@ -36,19 +36,21 @@ const GitHubOAuthApp = () => {
       // For demo purposes, we'll simulate this process
       console.log('OAuth code received:', code);
       
-      // This is where you would typically call your backend to exchange the code for a token
-      // const tokenResponse = await fetch('/api/oauth/github', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ code })
-      // });
-      
-      // For demo, we'll use a placeholder token (this won't work in production)
-      // You need to implement the server-side OAuth flow
-      setError('OAuth flow initiated. In production, implement server-side token exchange.');
-      
+      // Replace the placeholder in handleOAuthCallback with:
+      const tokenResponse = await fetch('/.netlify/functions/exchange_token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const tokenData = await tokenResponse.json();
+      if (tokenData.access_token) {
+        fetchUserData(tokenData.access_token);
+      } else {
+        setError('Failed to get access token');
+      }
+                
     } catch (err) {
-      setError('Failed to authenticate with GitHub');
+      setError('Failed to authenticate with Warhorn');
     } finally {
       setLoading(false);
       // Clean up URL
@@ -93,7 +95,7 @@ const GitHubOAuthApp = () => {
     `;
 
     try {
-      const response = await fetch('https://api.github.com/graphql', {
+      const response = await fetch('https://warhorn.net/graphql', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
