@@ -9,54 +9,55 @@ const GitHubOAuthApp = () => {
   const [error, setError] = useState(null);
 
   // GitHub OAuth configuration
-  const CLIENT_ID = process.env.CLIENT_ID; // Replace with your GitHub App client ID
+  const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
   const REDIRECT_URI = window.location.origin;
 
+  // handleOAuthCallback moved inside useEffect below
+
   useEffect(() => {
-    // Check for OAuth callback
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
-    
+
+    const handleOAuthCallback = async (code) => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // In a real app, you'd exchange the code for an access token via your backend
+        // For demo purposes, we'll simulate this process
+        console.log('OAuth code received:', code);
+        // Replace the placeholder in handleOAuthCallback with:
+        const tokenResponse = await fetch('/.netlify/functions/exchange_token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code }),
+        });
+        const tokenData = await tokenResponse.json();
+        if (tokenData.access_token) {
+          fetchUserData(tokenData.access_token);
+        } else {
+          setError('Failed to get access token');
+        }
+      } catch (err) {
+        setError('Failed to authenticate with Warhorn');
+      } finally {
+        setLoading(false);
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
+
     if (code && !user) {
       handleOAuthCallback(code);
     }
-  }, []);
+  }, [user]);
 
   const handleLogin = () => {
     const warhornAuthUrl = `https://warhorn.net/oauth/authorize?response_type=code&redirect_uri=${REDIRECT_URI}&scope=openid%20email%20profile&state=stateystate&client_id=${CLIENT_ID}`;
     window.location.href = warhornAuthUrl;
   };
 
-  const handleOAuthCallback = async (code) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // In a real app, you'd exchange the code for an access token via your backend
-      // For demo purposes, we'll simulate this process
-      console.log('OAuth code received:', code);
-      
-      // Replace the placeholder in handleOAuthCallback with:
-      const tokenResponse = await fetch('/.netlify/functions/exchange_token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      });
-      const tokenData = await tokenResponse.json();
-      if (tokenData.access_token) {
-        fetchUserData(tokenData.access_token);
-      } else {
-        setError('Failed to get access token');
-      }
-                
-    } catch (err) {
-      setError('Failed to authenticate with Warhorn');
-    } finally {
-      setLoading(false);
-      // Clean up URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  };
+  
 
   const fetchUserData = async (token) => {
     const query = `
@@ -134,7 +135,7 @@ const GitHubOAuthApp = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-800 flex items-center justify-center">
-        <div className="text-white text-xl">Authenticating with GitHub...</div>
+        <div className="text-white text-xl">Authenticating with Warhorn...</div>
       </div>
     );
   }
