@@ -8,7 +8,7 @@ const GitHubOAuthApp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // GitHub OAuth configuration
+  //   Warhorn OAuth configuration
   const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
   const REDIRECT_URI = "https://paizo.netlify.app"
 
@@ -146,10 +146,10 @@ const GitHubOAuthApp = () => {
         <header className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             <Github className="w-10 h-10" />
-            GitHub OAuth Demo
+            Warhorn OAuth Demo
           </h1>
           <p className="text-purple-200 text-lg">
-            Authenticate with GitHub and view your profile data via GraphQL
+            Authenticate with Warhorn and view your profile data via GraphQL
           </p>
         </header>
 
@@ -160,7 +160,7 @@ const GitHubOAuthApp = () => {
               <div className="mt-4 text-sm text-red-300">
                 <p><strong>Setup Instructions:</strong></p>
                 <ol className="list-decimal list-inside mt-2 space-y-1">
-                  <li>Create a GitHub OAuth App at github.com/settings/developers</li>
+                  <li>Create a Warhorn OAuth App at warhorn.net</li>
                   <li>Set Authorization callback URL to your domain</li>
                   <li>Replace CLIENT_ID with your app's client ID</li>
                   <li>Implement server-side token exchange (required for security)</li>
@@ -176,17 +176,17 @@ const GitHubOAuthApp = () => {
               <div className="text-center">
                 <Github className="w-16 h-16 text-white mx-auto mb-6" />
                 <h2 className="text-2xl font-semibold text-white mb-6">
-                  Sign in with GitHub
+                  Sign in with Warhorn
                 </h2>
                 <button
                   onClick={handleLogin}
                   className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2"
                 >
                   <Github className="w-5 h-5" />
-                  Authenticate with GitHub
+                  Authenticate with Warhorn
                 </button>
                 <p className="text-purple-200 text-sm mt-4">
-                  Access your GitHub profile and repository data
+                  Access your Warhorn profile and data
                 </p>
               </div>
             </div>

@@ -35,6 +35,7 @@ exports.handler = async function(event, context) {
     });
     const data = await response.json();
     if (data.error) {
+        console.log("Error response from Warhorn:", data);
       return {
         statusCode: 400,
         body: JSON.stringify(data)
